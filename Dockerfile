@@ -5,14 +5,17 @@ WORKDIR /app
 # パッケージファイルをコピー
 COPY package*.json ./
 
-# 依存関係インストール
-RUN npm ci --only=production
+# 全ての依存関係をインストール（devDependenciesも含む）
+RUN npm ci
 
 # ソースコードをコピー
 COPY . .
 
 # TypeScriptビルド
 RUN npm run build
+
+# 本番用依存関係のみを再インストール
+RUN npm ci --only=production && npm cache clean --force
 
 # ポート公開
 EXPOSE 3001
